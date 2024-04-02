@@ -22,13 +22,13 @@ async def start_command(client: Client, message: Message):
     except UserNotParticipant:
         f_link = await client.export_chat_invite_link(FSUB_CHANNEL)
         buttons = [
-            [InlineKeyboardButton("⛔ Join Channel ⛔", url=f"f_link")]
+            [InlineKeyboardButton("⛔ Join Channel ⛔", url=f_link)]
         ]
         if len(message.command) > 1:
             buttons.append([InlineKeyboardButton("♻️ Try Again ♻️", url=f"https://telegram.me/{client.username}?start={message.command[1]}")])
 
         await message.reply(
-            f"<b> ⚠️ Dear {message.from_user.mention} ❗\n\n🙁 First join our channel then you will get your Vedio, otherwise you will not get it.\n\nClick join channel button 👇\n\nसबसे पहले हमारे चैनल से जुड़ें फिर आपको आपका वीडियो मिलेगा, चैनल से जुड़ें बटन पर क्लिक करें 👇</b>",
+            f"<b> ⚠️ Dear {message.from_user.mention} ❗\n\n🙁 First join our channel then you will get your Video, otherwise you will not get it.\n\nClick join channel button 👇\n\nसबसे पहले हमारे चैनल से जुड़ें फिर आपको आपका वीडियो मिलेगा, चैनल से जुड़ें बटन पर क्लिक करें 👇</b>",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
         return
