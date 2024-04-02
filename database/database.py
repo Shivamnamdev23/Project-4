@@ -27,3 +27,7 @@ async def full_userbase():
 async def del_user(user_id: int):
     user_data.delete_one({'_id': user_id})
     return
+
+async def get_user_data(user_id: int):
+    user_info = user_data.find_one({'_id': user_id})
+    return user_info
