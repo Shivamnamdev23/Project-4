@@ -14,104 +14,6 @@ SECONDS = int(os.getenv("SECONDS", "600"))
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
-    if not await present_user(id):
-        try:
-            await add_user(id)
-        except:
-            pass
-    text = message.text
-    if len(text)>7:
-        try:
-            base64_string = text.split(" ", 1)[1]
-        except:
-            return
-        string = await decode(base64_string)
-        argument = string.split("-")
-        if len(argument) == 3:
-            try:
-                start = int(int(argument[1]) / abs(client.db_channel.id))
-                end = int(int(argument[2]) / abs(client.db_channel.id))
-            except:
-                return
-            if start <= end:
-                ids = range(start,end+1)
-            else:
-                ids = []
-                i = start
-                while True:
-                    ids.append(i)
-                    i -= 1
-                    if i < end:
-                        break
-        elif len(argument) == 2:
-            try:
-                ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-            except:
-                return
-        temp_msg = await message.reply("Please wait...")
-        try:
-            messages = await get_messages(client, ids)
-        except:
-            await message.reply_text("Something went wrong..!")
-            return
-        await temp_msg.delete()
-    
-        
-        for msg in messages:
-
-            if bool(CUSTOM_CAPTION) and (bool(msg.document) or bool(msg.video)):
-                caption = CUSTOM_CAPTION.format(previouscaption=msg.caption.html, filename=msg.document.file_name if msg.document else msg.video.file_name)
-            else:
-                caption = CUSTOM_CAPTION.format(previouscaption="", filename=msg.document.file_name if msg.document else msg.video.file_name)
-        else:
-                caption = "" if not msg.caption else msg.caption.html
-
-            if DISABLE_CHANNEL_BUTTON:
-                reply_markup = msg.reply_markup
-            else:
-                reply_markup = None
-
-            try:
-                f = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
-
-            except FloodWait as e:
-                await asyncio.sleep(e.x)
-                f = await msg.copy(chat_id=message.from_user.id, caption = caption, parse_mode = ParseMode.HTML, reply_markup = reply_markup, protect_content=PROTECT_CONTENT)
-
-            except:
-                pass
-        k = await client.send_message(chat_id = message.from_user.id, text=f"<b>This video/file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video/file to somewhere else and start downloading there.</b>")
-        await asyncio.sleep(SECONDS)
-        await f.delete()
-        await k.edit_text("Your video/file is successfully deleted !")
-
-
-        return
-    else:
-        reply_markup = InlineKeyboardMarkup(
-            [ [ InlineKeyboardButton("Source Code", url="https://t.me/") ],
-                [
-                    InlineKeyboardButton("😊 About Me", callback_data = "about"),
-                    InlineKeyboardButton("🔒 Close", callback_data = "close")
-                ]
-            ]
-        )
-        await message.reply_text(
-            text = START_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
-            ),
-            reply_markup = reply_markup,
-            disable_web_page_preview = True,
-            quote = True
-        )
-        return
-@Bot.on_message(filters.command('start') & filters.private & subscribed)
-async def start_command(client: Client, message: Message):
-    id = message.from_user.id
     
     # Add user if not present in the database
     if not await present_user(id):
@@ -195,6 +97,7 @@ async def start_command(client: Client, message: Message):
             quote=True
         )
         return
+
     
 #=====================================================================================##
 
