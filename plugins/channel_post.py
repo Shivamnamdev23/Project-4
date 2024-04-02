@@ -24,7 +24,7 @@ async def channel_post(client: Client, message: Message):
     base64_string = await encode(string)
     link = f"https://t.me/{client.username}?start={base64_string}"
 
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("📁 File Link", url=f'{link}'),InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={short_link}')]])
+    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("📁 File Link", url=f'{link}'),InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
 
     await reply_text.edit(f"<b>✅ Your <a href='{link}'>Link</a> has been generated!\n\n👇 You can access the file using the link below.\n\n<code>{link}</code>\n\n(👆 Tap to copy)</b>", reply_markup=reply_markup, disable_web_page_preview = True)
 
