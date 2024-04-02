@@ -1,23 +1,12 @@
-# Jishu Developer 
-# Don't Remove Credit 🥺
-# Telegram Channel @Madflix_Bots
-# Backup Channel @JishuBotz
-# Developer @JishuDeveloper
-
-
-
-
 import pymongo, os
 from config import DB_URL, DB_NAME
-
 
 dbclient = pymongo.MongoClient(DB_URL)
 database = dbclient[DB_NAME]
 
-
 user_data = database['users']
-
-
+api_data = database['apis']
+site_data = database['sites']
 
 async def present_user(user_id : int):
     found = user_data.find_one({'_id': user_id})
@@ -38,17 +27,3 @@ async def full_userbase():
 async def del_user(user_id: int):
     user_data.delete_one({'_id': user_id})
     return
-
-
-
-
-
-
-
-
-
-# Jishu Developer 
-# Don't Remove Credit 🥺
-# Telegram Channel @Madflix_Bots
-# Backup Channel @JishuBotz
-# Developer @JishuDeveloper
