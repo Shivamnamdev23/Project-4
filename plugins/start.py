@@ -211,22 +211,24 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
 
 @Bot.on_message(filters.command("site") & filters.private)
 async def site_handler(Bot, message):
-    user_id = message.from_user.id
     try:
+        user_id = message.from_user.id
         site_url = message.text.split(maxsplit=1)[1]
+        site_data.update_one({'_id': user_id}, {'$set': {'url': site_url}}, upsert=True)
+        await message.reply("Site URL added successfully!")
     except IndexError:
         await message.reply("Please provide a valid site URL.")
-        return
-    site_data.update_one({'_id': user_id}, {'$set': {'url': site_url}}, upsert=True)
-    await message.reply("Site URL added successfully!")
+    except Exception as e:
+        await message.reply(f"An error occurred: {e}")
 
 @Bot.on_message(filters.command("api") & filters.private)
 async def api_handler(Bot, message):
-    user_id = message.from_user.id
     try:
+        user_id = message.from_user.id
         api_key = message.text.split(maxsplit=1)[1]
+        api_data.update_one({'_id': user_id}, {'$set': {'key': api_key}}, upsert=True)
+        await message.reply("API key added successfully!")
     except IndexError:
         await message.reply("Please provide a valid API key.")
-        return
-    api_data.update_one({'_id': user_id}, {'$set': {'key': api_key}}, upsert=True)
-    await message.reply("API key added successfully!")
+    except Exception as e:
+        await message.reply(f"An error occurred: {e}")
