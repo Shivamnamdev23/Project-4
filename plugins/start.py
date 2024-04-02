@@ -74,7 +74,7 @@ async def start_command(client: Client, message: Message):
                 reply_markup = None
 
             try:
-                f = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                m = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
                 f = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
@@ -84,6 +84,7 @@ async def start_command(client: Client, message: Message):
         k = await client.send_message(chat_id=message.from_user.id, text="<b>This video/file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video/file to somewhere else and start downloading there.</b>")
         await asyncio.sleep(10)
         await f.delete()
+        await m.delete()
         await k.edit_text("Your video/file is successfully deleted!")
         return
     
