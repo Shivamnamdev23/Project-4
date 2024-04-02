@@ -93,16 +93,16 @@ async def start_command(client: Client, message: Message):
 
             except:
                 pass
-        k = await client.send_message(chat_id = message.from_user.id, text=f"<b>❗️ <u>IMPORTANT</u> ❗️</b>\n\nThis video/file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video/file to somewhere else and start downloading there.\n Bot devloped  by @infoxe")
+        k = await client.send_message(chat_id = message.from_user.id, text=f"<b>This video/file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video/file to somewhere else and start downloading there.</b>")
         await asyncio.sleep(SECONDS)
         await f.delete()
-        await k.edit_text("Your video/file is successfully deleted ! \n👨‍💻 DEVLOPER => @fameor")
+        await k.edit_text("Your video/file is successfully deleted !")
 
 
         return
     else:
         reply_markup = InlineKeyboardMarkup(
-            [ [ InlineKeyboardButton("Source Code", url="https://t.me/+NeqCUg-QDxo2Nzll") ],
+            [ [ InlineKeyboardButton("Source Code", url="https://t.me/") ],
                 [
                     InlineKeyboardButton("😊 About Me", callback_data = "about"),
                     InlineKeyboardButton("🔒 Close", callback_data = "close")
@@ -222,16 +222,3 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
-
-
-
-
-
-
-
-
-# Jishu Developer 
-# Don't Remove Credit 🥺
-# Telegram Channel @Madflix_Bots
-# Backup Channel @JishuBotz
-# Developer @JishuDeveloper
