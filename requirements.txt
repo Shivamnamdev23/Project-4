@@ -9,7 +9,7 @@ pyromod==1.5
 pymongo
 dnspython
 
-
+requests
 
 # --- For-Web-Response ------- #
 aiohttp
