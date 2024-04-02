@@ -84,7 +84,7 @@ async def start_command(client: Client, message: Message):
                 pass
             
         k = await client.send_message(chat_id=message.from_user.id, text="<b>This video/file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video/file to somewhere else and start downloading there.</b>")
-        await asyncio.sleep(5)
+        await asyncio.sleep(600)
         for f in copied_messages:
             await f.delete()
         await k.edit_text("Your video/file is successfully deleted!")
