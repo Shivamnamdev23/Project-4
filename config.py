@@ -1,39 +1,24 @@
-
-
-
-
 import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-
-
-
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
-APP_ID = int(os.environ.get("APP_ID", ""))
-API_HASH = os.environ.get("API_HASH", "")
-
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7016553125:AAHmA0g59y1kS3vY2U6nUwwdebwF2krJaJM")
+APP_ID = int(os.environ.get("APP_ID", "27499182"))
+API_HASH = os.environ.get("API_HASH", "9c58142ef6abed28808a50e3e983c39c")
 
 OWNER = os.environ.get("OWNER", "") #Owner username
-OWNER_ID = int(os.environ.get("OWNER_ID", "")) #Owner user id
-DB_URL = os.environ.get("DB_URL", "")
+OWNER_ID = int(os.environ.get("OWNER_ID", "6249148586")) #Owner user id
+DB_URL = os.environ.get("DB_URL", "mongodb+srv://FilesharingBot:FilesharingBot@cluster0.r6bvmvj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 DB_NAME = os.environ.get("DB_NAME", "madflixbotz")
 
-
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", ""))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002006503236"))
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
 FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "0"))
 
-
 SECONDS = int(os.getenv("SECONDS", "600")) # auto delete in seconds
-
-
 
 PORT = os.environ.get("PORT", "8080")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
-
-
-
 
 START_MSG = os.environ.get("START_MESSAGE", "Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link.")
 
@@ -54,7 +39,7 @@ PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" e
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
 
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
-USER_REPLY_TEXT = "❌Don't send me messages directly I'm only File Share bot ! \n 👨‍💻 Bot Devloper @fameor"
+USER_REPLY_TEXT = "❌Don't send me messages directly I'm only File Share bot !"
 
 ADMINS.append(OWNER_ID)
 ADMINS.append(7085541484)
@@ -79,9 +64,3 @@ logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 def LOGGER(name: str) -> logging.Logger:
     return logging.getLogger(name)
-   
-
-
-
-
-
