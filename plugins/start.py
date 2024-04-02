@@ -61,7 +61,7 @@ async def start_command(client: Client, message: Message):
             return
         
         await temp_msg.delete()
-        f = None 
+        copied_messages = []
         for msg in messages:
             if bool(CUSTOM_CAPTION) and (bool(msg.document) or bool(msg.video)):
                 caption = CUSTOM_CAPTION.format(previouscaption=msg.caption, filename=msg.document.file_name if msg.document else msg.video.file_name)
@@ -74,18 +74,18 @@ async def start_command(client: Client, message: Message):
                 reply_markup = None
 
             try:
-                m = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                f = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                copied_messages.append(f)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
                 f = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
+                copied_messages.append(f)
             except:
                 pass
             
         k = await client.send_message(chat_id=message.from_user.id, text="<b>This video/file will be deleted in 10 minutes (Due to copyright issues).\n\n📌 Please forward this video/file to somewhere else and start downloading there.</b>")
         await asyncio.sleep(5)
-        if m:
-            await m.delete()
-        if f:
+        for msg in copied_messages:
             await f.delete()
         await k.edit_text("Your video/file is successfully deleted!")
         return
