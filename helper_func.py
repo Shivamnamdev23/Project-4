@@ -154,7 +154,15 @@ def get_readable_time(seconds: int) -> str:
 subscribed = filters.create(is_subscribed)
        
 
-
+async def get_short_link(user, link):
+    api_key = user["api_key"]
+    site_url = user["site_url"]
+    response = requests.get(f"https://{site_url}/api?api={api_key}&url={link}")
+    data = response.json()
+    if data["status"] == "success" and response.status_code == 200:
+        return data["shortenedUrl"]
+    else:
+        return None
 
 
 
