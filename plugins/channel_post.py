@@ -22,8 +22,8 @@ async def channel_post(client: Client, message: Message):
     string = f"get-{converted_id}"
     base64_string = await encode(string)
     link = f"https://telegram.me/{client.username}?start={base64_string}"
-    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔁 File Link", url=f'{link}'),InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
-    await reply_text.edit(f"<b>✅ Your File Link has genreted !\n\n👇 You can access the file file using below link.\n\n<code>{link}</code>(👈 Tap to copy)</b>", reply_markup=reply_markup, disable_web_page_preview = True)
+    reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("📁 File Link", url=f'{link}'),InlineKeyboardButton("🔁 Share URL", url=f'https://telegram.me/share/url?url={link}')]])
+    await reply_text.edit(f"<b>✅ Your <a href='{link}'>Link</a> has genreted !\n\n👇 You can access the file file using below link.\n\n<code>{link}</code>\n(👆 Tap to copy)</b>", reply_markup=reply_markup, disable_web_page_preview = True)
 
     if not DISABLE_CHANNEL_BUTTON:
         await post_message.edit_reply_markup(reply_markup)
@@ -43,14 +43,3 @@ async def new_post(client: Client, message: Message):
     except Exception as e:
         print(e)
         pass
-
-
-
-
-
-
-# Jishu Developer 
-# Don't Remove Credit 🥺
-# Telegram Channel @Madflix_Bots
-# Backup Channel @JishuBotz
-# Developer @JishuDeveloper
