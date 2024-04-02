@@ -1,12 +1,3 @@
-# Jishu Developer 
-# Don't Remove Credit 🥺
-# Telegram Channel @Madflix_Bots
-# Backup Channel @JishuBotz
-# Developer @JishuDeveloper
-
-
-
-
 import os
 import asyncio
 from pyrogram import Client, filters, __version__
@@ -16,15 +7,10 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from bot import Bot
 from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT
 from helper_func import subscribed, encode, decode, get_messages
-from database.database import add_user, del_user, full_userbase, present_user
+from database.database import add_user, del_user, full_userbase, present_user, site_data, api_data
 
-
-# add time im seconds for waitingwaiting before delete 
 # 1 minutes = 60, 2 minutes = 60×2=120, 5 minutes = 60×5=300
 SECONDS = int(os.getenv("SECONDS", "600"))
-
-
-
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
@@ -222,3 +208,25 @@ Unsuccessful: <code>{unsuccessful}</code></b>"""
         msg = await message.reply(REPLY_ERROR)
         await asyncio.sleep(8)
         await msg.delete()
+
+@Bot.on_message(filters.command("site") & filters.private)
+async def site_handler(Bot, message):
+    user_id = message.from_user.id
+    try:
+        site_url = message.text.split(maxsplit=1)[1]
+    except IndexError:
+        await message.reply("Please provide a valid site URL.")
+        return
+    site_data.update_one({'_id': user_id}, {'$set': {'url': site_url}}, upsert=True)
+    await message.reply("Site URL added successfully!")
+
+@Bot.on_message(filters.command("api") & filters.private)
+async def api_handler(Bot, message):
+    user_id = message.from_user.id
+    try:
+        api_key = message.text.split(maxsplit=1)[1]
+    except IndexError:
+        await message.reply("Please provide a valid API key.")
+        return
+    api_data.update_one({'_id': user_id}, {'$set': {'key': api_key}}, upsert=True)
+    await message.reply("API key added successfully!")
