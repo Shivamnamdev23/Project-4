@@ -1,3 +1,4 @@
+import requests
 import asyncio
 from pyrogram import filters, Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
@@ -5,34 +6,40 @@ from pyrogram.errors import FloodWait
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
 from helper_func import encode
-from database.database import get_user_data
+from pymongo import MongoClient
+
+mongo_client = MongoClient("mongodb+srv://FilesharingBot:FilesharingBot@cluster0.r6bvmvj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+db = mongo_client["url_shortener"]
+user_collection = db["usersx"]
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
-async def channel_post(client: Client, message: Message):
-    
+async def channel_post(bot: Bot, message: Message):
     if message.text.startswith("/"):
         return
     reply_text = await message.reply_text("Please Wait...!", quote=True)
     try:
-        post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+        post_message = await message.copy(chat_id=bot.db_channel.id, disable_notification=True)
     except FloodWait as e:
         await asyncio.sleep(e.x)
-        post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
+        post_message = await message.copy(chat_id=bot.db_channel.id, disable_notification=True)
     except Exception as e:
         print(e)
         await reply_text.edit_text("Something went Wrong..!")
         return
 
-    converted_id = post_message.id * abs(client.db_channel.id)
+    converted_id = post_message.message_id * abs(bot.db_channel.id)
     string = f"get-{converted_id}"
     base64_string = await encode(string)
-    link = f"https://telegram.me/{client.username}?start={base64_string}"
+    link = f"https://telegram.me/{bot.username}?start={base64_string}"
 
-    # Retrieve user-specific data (API key, shortening site, etc.) here
-    user = await get_user_data(message.from_user.id)
-    if user:
-        # Shorten the link using user-specific data
-        short_link = await get_short_link(user, link)
+    # Retrieve URL and API key from the database
+    user_data = user_collection.find_one({"user_id": message.from_user.id})
+    if user_data and "shortner_url" in user_data and "shortner_api" in user_data:
+        shortner_url = user_data["shortner_url"]
+        shortner_api = user_data["shortner_api"]
+
+        # Use URL and API key to generate short link
+        short_link = await get_short_link(shortner_url, shortner_api, link)
         if short_link:
             reply_markup = InlineKeyboardMarkup([
                 [InlineKeyboardButton("📁 File Link", url=short_link),
@@ -68,13 +75,40 @@ async def new_post(client: Client, message: Message):
         print(e)
         pass
         
-async def get_short_link(user, link):
-    if "api_key" in user:
-        api_key = user["api_key"]
-        site_url = user.get("site_url")  # Use .get() method to safely retrieve value with a default value
-        if site_url:
-            response = requests.get(f"https://{site_url}/api?api={api_key}&url={link}")
-            data = response.json()
-            if data.get("status") == "success" and response.status_code == 200:
-                return data.get("shortenedUrl")
-    return None  # Return None if 'api_key' key is not found in user dictionary or if site_url is not available
+async def get_short_link(shortner_url, shortner_api, link):
+    try:
+        response = requests.get(f"{shortner_url}?api_key={shortner_api}&url={link}")
+        data = response.json()
+        if response.status_code == 200 and data.get("status") == "success":
+            return data.get("shortened_url")
+        else:
+            return None
+    except Exception as e:
+        print(f"Error occurred while shortening URL: {e}")
+        return None
+        
+@Bot.on_message(filters.private & filters.command("set_shortner"))
+async def set_shortner_api(bot: Bot, message: Message):
+    await message.reply_text("<b>Sᴇɴᴅ ᴍᴇ ᴀ sʜᴏʀᴛʟɪɴᴋ ᴜʀʟ...</b>\n\n/cancel - ᴄᴀɴᴄᴇʟ ᴛʜɪs ᴘʀᴏᴄᴇss.", parse_mode="html")
+    url_msg = await bot.listen(message.from_user.id)
+    if url_msg.text == '/cancel':
+        await message.reply("ᴄᴀɴᴄᴇʟʟᴇᴅ ᴛʜɪs ᴘʀᴏᴄᴇss...")
+        return
+    url = url_msg.text
+    await url_msg.delete()
+
+    await message.reply("sᴇɴᴅ ᴍᴇ sʜᴏʀᴛʟɪɴᴋ ᴀᴘɪ...")
+    api_msg = await bot.listen(message.from_user.id)
+    if api_msg.text == '/cancel':
+        await message.reply("ᴄᴀɴᴄᴇʟʟᴇᴅ ᴛʜɪs ᴘʀᴏᴄᴇss...")
+        return
+    api_key = api_msg.text
+    await api_msg.delete()
+
+    # Now you have both URL and API, save them to the database
+    user_collection.update_one(
+        {"user_id": message.from_user.id},
+        {"$set": {"shortner_url": url, "shortner_api": api_key}},
+        upsert=True
+    )
+    await message.reply_text("URL shortener and API key saved successfully!")
