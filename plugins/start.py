@@ -93,7 +93,7 @@ async def start_command(client: Client, message: Message):
     # Handle start command without arguments
     else:
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("Source Code", url="https://t.me/")],
+            [InlineKeyboardButton("Official Channel", url="https://t.me/OTTProvider")],
             [InlineKeyboardButton("😊 About Me", callback_data="about"),
              InlineKeyboardButton("🔒 Close", callback_data="close")]
         ])
