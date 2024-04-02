@@ -5,22 +5,33 @@ from pyrogram.enums import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from bot import Bot
-from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT
+from pyrogram.errors import UserNotParticipant
+from config import ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON, PROTECT_CONTENT, FSUB_CHANNEL
 from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 # 1 minutes = 60, 2 minutes = 60×2=120, 5 minutes = 60×5=300
 SECONDS = int(os.getenv("SECONDS", "600"))
 
-@Bot.on_message(filters.command('start') & filters.private & subscribed)
+@Bot.on_message(filters.command("start") & filters.private)
 async def start_command(client: Client, message: Message):
-    id = message.from_user.id
-    
-    # Add user if not present in the database
-    if not await present_user(id):
-        try:
-            await add_user(id)
-        except:
-            pass
+    try:
+        user_id = message.from_user.id
+        if not await present_user(user_id):
+            await add_user(user_id)
+        await client.get_chat_member(FSUB_CHANNEL, user_id)
+    except UserNotParticipant:
+        f_link = await client.export_chat_invite_link(FSUB_CHANNEL)
+        buttons = [
+            [InlineKeyboardButton("⛔ Join Channel ⛔", url=f"f_link")]
+        ]
+        if len(message.command) > 1:
+            buttons.append([InlineKeyboardButton("♻️ Try Again ♻️", url=f"https://telegram.me/{client.username}?start={message.command[1]}")])
+
+        await message.reply(
+            f"<b> ⚠️ Dear {message.from_user.mention} ❗\n\n🙁 First join our channel then you will get your Vedio, otherwise you will not get it.\n\nClick join channel button 👇\n\nसबसे पहले हमारे चैनल से जुड़ें फिर आपको आपका वीडियो मिलेगा, चैनल से जुड़ें बटन पर क्लिक करें 👇</b>",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        return
     
     text = message.text
     
