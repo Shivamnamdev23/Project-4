@@ -4,11 +4,14 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
 from bot import Bot
 from config import ADMINS, CHANNEL_ID, DISABLE_CHANNEL_BUTTON
-from helper_func import encode, get_short_link
+from helper_func import encode
 from database.database import get_user_data
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
 async def channel_post(client: Client, message: Message):
+    
+    if message.text.startswith("/"):
+        return
     reply_text = await message.reply_text("Please Wait...!", quote=True)
     try:
         post_message = await message.copy(chat_id=client.db_channel.id, disable_notification=True)
@@ -64,3 +67,14 @@ async def new_post(client: Client, message: Message):
     except Exception as e:
         print(e)
         pass
+        
+async def get_short_link(user, link):
+    if "api_key" in user:
+        api_key = user["api_key"]
+        site_url = user.get("site_url")  # Use .get() method to safely retrieve value with a default value
+        if site_url:
+            response = requests.get(f"https://{site_url}/api?api={api_key}&url={link}")
+            data = response.json()
+            if data.get("status") == "success" and response.status_code == 200:
+                return data.get("shortenedUrl")
+    return None  # Return None if 'api_key' key is not found in user dictionary or if site_url is not available
